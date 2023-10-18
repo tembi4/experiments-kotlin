@@ -2,20 +2,6 @@ package adventofcode.day09
 
 class BasinCalculator(private val field: List<List<Int>>) {
 
-    /*
-    *
-    * // Everything after this is in red
-val red = "\u001b[31m"
-
-// Resets previous color codes
-val reset = "\u001b[0m"
-
-println(red + "Hello World!" + reset)
-    *
-    *
-    * */
-
-
     fun totalLocationsCount(): Int {
 
         val allBasins = mutableSetOf<Basin>()
@@ -29,16 +15,22 @@ println(red + "Hello World!" + reset)
 //                    println("Searching for all points for $basin")
                     // Now, we need to find all points of the basin
                     findAllPoints(basin, currentPoint, null)
+
                     allBasins.add(basin)
-                    println("Found that for $basin has size ${basin.size}")
-                    printBasin(basin)
-                    println("--------------------------------------------------")
+//                    println("Found that for $basin has size ${basin.size}")
+//                    printBasin(basin)
+//                    println("--------------------------------------------------")
                 }
             }
         }
 
         // The result is 3 largest basins' sizes multiplied between each other
-        return allBasins.sortedByDescending(Basin::size)
+        val largestBasins = allBasins.sortedByDescending(Basin::size)
+        largestBasins.forEach {
+            println("Largest Basins $it with size ${it.size}")
+        }
+
+        return largestBasins
             .take(3)
             .fold(1) { acc, basin -> acc * basin.size }
     }
@@ -49,38 +41,7 @@ println(red + "Hello World!" + reset)
         GREEN("\u001b[1m\u001b[32m")
     }
 
-    private fun printBasin(basin: Basin) {
-        var color = Color.BLACK
-        field.indices.forEach { row ->
-            var s = StringBuilder()
-            field[row].indices.forEach{ col ->
-                val currentPoint = Point(row, col)
 
-                if (basin.isbase(currentPoint)) {
-                    // Apply Green
-                    s.append(Color.GREEN.code)
-                    s.append(field[currentPoint])
-                    color = Color.BLACK
-                    s.append(color.code)
-                } else {
-                    val inBasin = basin.contains(currentPoint)
-                    when(color to inBasin) {
-                        Color.BLACK to true -> {
-                            color = Color.RED
-                            s.append(color.code)
-                        }
-                        Color.RED to false -> {
-                            color = Color.BLACK
-                            s.append(color.code)
-                        }
-                    }
-                    s.append(field[currentPoint])
-                }
-
-            }
-            println(s)
-        }
-    }
 
     operator fun List<List<Int>>.get(point: Point): Int = this[point.row][point.col]
 
@@ -132,6 +93,11 @@ println(red + "Hello World!" + reset)
     private fun isPointPartOfBasin(point: Point, basin: Basin): Boolean {
         val pointValue = field[point]
 
+        // Check if the point is not corner and 9
+        if (pointValue == 9) {
+            return false
+        }
+
         // Check Top
         if (point.row > 0) {
             val pointToCheck = point.top()
@@ -141,7 +107,6 @@ println(red + "Hello World!" + reset)
         if (point.row < field.size - 1) {
             val pointToCheck = point.bottom()
             if (!basin.contains(pointToCheck) && field[pointToCheck] <= pointValue) return false
-
         }
         // Check Left
         if (point.col > 0) {
@@ -159,6 +124,10 @@ println(red + "Hello World!" + reset)
 
     // The method can be merged with isPointPartOfBasin if to handle empty basin
     private fun isLowestFromAdjacent(num: Int, point: Point): Boolean {
+
+        if (num == 9) {
+            return false
+        }
 
         val (row, col) = point
 
