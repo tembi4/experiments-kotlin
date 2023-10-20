@@ -1,33 +1,44 @@
 package adventofcode.day09
 
-class BasinCalculator(private val field: List<List<Int>>) {
+class BasinCalculator(
+    private val field: Field,
+    private val isLogging: Boolean = false,
+) {
 
     fun totalLocationsCount(): Int {
 
         val allBasins = mutableSetOf<Basin>()
 
-        field.forEachIndexed { row, numbersInRow ->
-            numbersInRow.forEachIndexed { col, num ->
+        field.values.forEachIndexed { row, numbersInRow ->
+            numbersInRow.forEachIndexed { col, _ ->
                 val currentPoint = Point(row, col)
-                if (isLowestFromAdjacent(num, currentPoint)) {
+                if (isLowestFromAdjacent(currentPoint)) {
                     // Create a new basin
                     val basin = Basin(currentPoint)
-//                    println("Searching for all points for $basin")
+
+                    if (isLogging) {
+                        println("Searching for all points for $basin")
+                    }
                     // Now, we need to find all points of the basin
-                    findAllPoints(basin, currentPoint, null)
+                    findAllPoints(basin, currentPoint)
 
                     allBasins.add(basin)
-//                    println("Found that for $basin has size ${basin.size}")
-//                    printBasin(basin)
-//                    println("--------------------------------------------------")
+
+                    if (isLogging) {
+                        println("Found that for $basin has size ${basin.size}")
+//                        printBasin(basin)
+                        println("--------------------------------------------------")
+                    }
                 }
             }
         }
 
         // The result is 3 largest basins' sizes multiplied between each other
         val largestBasins = allBasins.sortedByDescending(Basin::size)
-        largestBasins.forEach {
-            println("Largest Basins $it with size ${it.size}")
+        if (isLogging) {
+            largestBasins.forEach {
+                println("Largest Basins $it with size ${it.size}")
+            }
         }
 
         return largestBasins
@@ -35,57 +46,37 @@ class BasinCalculator(private val field: List<List<Int>>) {
             .fold(1) { acc, basin -> acc * basin.size }
     }
 
-    enum class Color(val code: String){
-        BLACK("\u001b[0m\u001b[0m"),
-        RED("\u001b[1m\u001b[31m"),
-        GREEN("\u001b[1m\u001b[32m")
-    }
-
-
-
-    operator fun List<List<Int>>.get(point: Point): Int = this[point.row][point.col]
-
-    enum class Direction {
-        TOP, BOTTOM, LEFT, RIGHT
-    }
-
-
-    /**
-     * @param direction where it came from, for the recursion. null is for initial
-     */
-    private fun findAllPoints(basin: Basin, point: Point, direction: Direction?) {
-//        direction in arrayOf(null, Direction.TOP)
-
+    private fun findAllPoints(basin: Basin, point: Point) {
         // Check Top
-        if ((direction == null || direction != Direction.TOP) && point.row > 0) {
+        if (field.hasOnSide(side = Sides.TOP, point = point)) {
             val pointToCheck = point.top()
             if (!basin.contains(pointToCheck) && isPointPartOfBasin(pointToCheck, basin)) {
                 basin.addPoint(pointToCheck)
-                findAllPoints(basin = basin, point = pointToCheck, Direction.BOTTOM)
+                findAllPoints(basin = basin, point = pointToCheck)
             }
         }
         // Check Bottom
-        if ((direction == null || direction != Direction.BOTTOM) && point.row < field.size - 1) {
+        if (field.hasOnSide(side = Sides.BOTTOM, point = point)) {
             val pointToCheck = point.bottom()
             if (!basin.contains(pointToCheck) && isPointPartOfBasin(pointToCheck, basin)) {
                 basin.addPoint(pointToCheck)
-                findAllPoints(basin = basin, point = pointToCheck, Direction.TOP)
+                findAllPoints(basin = basin, point = pointToCheck)
             }
         }
         // Check Left
-        if ((direction == null || direction != Direction.LEFT) && point.col > 0) {
+        if (field.hasOnSide(side = Sides.LEFT, point = point)) {
             val pointToCheck = point.left()
             if (!basin.contains(pointToCheck) && isPointPartOfBasin(pointToCheck, basin)) {
                 basin.addPoint(pointToCheck)
-                findAllPoints(basin = basin, point = pointToCheck, Direction.RIGHT)
+                findAllPoints(basin = basin, point = pointToCheck)
             }
         }
         // Check Right
-        if ((direction == null || direction != Direction.RIGHT) && point.col < field[point.row].size - 1) {
+        if (field.hasOnSide(side = Sides.RIGHT, point = point)) {
             val pointToCheck = point.right()
             if (!basin.contains(pointToCheck) && isPointPartOfBasin(pointToCheck, basin)) {
                 basin.addPoint(pointToCheck)
-                findAllPoints(basin = basin, point = pointToCheck, Direction.LEFT)
+                findAllPoints(basin = basin, point = pointToCheck)
             }
         }
     }
@@ -99,22 +90,22 @@ class BasinCalculator(private val field: List<List<Int>>) {
         }
 
         // Check Top
-        if (point.row > 0) {
+        if (field.hasOnSide(side = Sides.TOP, point = point)) {
             val pointToCheck = point.top()
             if (!basin.contains(pointToCheck) && field[pointToCheck] <= pointValue) return false
         }
         // Check Bottom
-        if (point.row < field.size - 1) {
+        if (field.hasOnSide(side = Sides.BOTTOM, point = point)) {
             val pointToCheck = point.bottom()
             if (!basin.contains(pointToCheck) && field[pointToCheck] <= pointValue) return false
         }
         // Check Left
-        if (point.col > 0) {
+        if (field.hasOnSide(side = Sides.LEFT, point = point)) {
             val pointToCheck = point.left()
             if (!basin.contains(pointToCheck) && field[pointToCheck] <= pointValue) return false
         }
         // Check Right
-        if (point.col < field[point.row].size - 1) {
+        if (field.hasOnSide(side = Sides.RIGHT, point = point)) {
             val pointToCheck = point.right()
             if (!basin.contains(pointToCheck) && field[pointToCheck] <= pointValue) return false
         }
@@ -123,30 +114,30 @@ class BasinCalculator(private val field: List<List<Int>>) {
     }
 
     // The method can be merged with isPointPartOfBasin if to handle empty basin
-    private fun isLowestFromAdjacent(num: Int, point: Point): Boolean {
+    private fun isLowestFromAdjacent(point: Point): Boolean {
+
+        val num = field[point]
 
         if (num == 9) {
             return false
         }
 
-        val (row, col) = point
-
-        if (row > 0) {
+        if (field.hasTop(point)) {
             // Check top
             val top = field[point.top()]
             if (top <= num) return false
         }
-        if (row < field.size - 1) {
+        if (field.hasBottom(point)) {
             // Check bottom
             val bottom = field[point.bottom()]
             if (bottom <= num) return false
         }
-        if (col > 0) {
+        if (field.hasLeft(point)) {
             // Check left
             val left = field[point.left()]
             if (left <= num) return false
         }
-        if (col < field[row].size - 1) {
+        if (field.hasRight(point)) {
             // Check right
             val right = field[point.right()]
             if (right <= num) return false

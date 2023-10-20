@@ -57,7 +57,7 @@ class Puzzle {
                         .map(String::toInt)
                 }
 
-            val basinCalculator = BasinCalculator(numbers)
+            val basinCalculator = BasinCalculator(field = Field(numbers), isLogging = false)
 
             return basinCalculator.totalLocationsCount()
         }

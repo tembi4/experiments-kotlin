@@ -2,6 +2,7 @@ package adventofcode.day09
 
 import adventofcode.readInput
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import kotlin.test.Test
 
 class PuzzleTestPart2 {
@@ -22,8 +23,9 @@ class PuzzleTestPart2 {
     @Test
     fun `test basin for input`() {
         val input = readInput("input_day09")
-        // 328509 is too low
-        // 314364
-        Puzzle.calculateResultForBasin(input) shouldBe 0
+        val result = Puzzle.calculateResultForBasin(input)
+        result shouldNotBe 328509
+        result shouldNotBe 314364
+        result shouldBe 0
     }
 }
