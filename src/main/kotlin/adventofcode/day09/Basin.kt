@@ -6,18 +6,15 @@ class Basin(private val lowLocation: Point) {
     val size: Int
         get() = points.size
 
-    fun isbase(point: Point): Boolean = point == lowLocation
-
-//    operator fun plus(point: Point): Basin {
-//        points += point
-//        return this
-//    }
+    fun isBase(point: Point): Boolean = point == lowLocation
 
     fun addPoint(point: Point) {
         points += point
     }
 
     fun contains(point: Point) = points.contains(point)
+
+    fun notContains(point: Point) = !contains(point)
 
     override fun toString(): String {
         return "Basin$lowLocation"

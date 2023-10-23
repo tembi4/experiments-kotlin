@@ -9,10 +9,10 @@ class BasinCalculator(
 
         val allBasins = mutableSetOf<Basin>()
 
-        field.values.forEachIndexed { row, numbersInRow ->
-            numbersInRow.forEachIndexed { col, _ ->
+        for (row in 0..<field.size){
+            for (col in 0..<field.colSize(row)) {
                 val currentPoint = Point(row, col)
-                if (isLowestFromAdjacent(currentPoint)) {
+                if (field.isValid(currentPoint) && isLowestFromAdjacent(point = currentPoint)) {
                     // Create a new basin
                     val basin = Basin(currentPoint)
 
@@ -47,102 +47,31 @@ class BasinCalculator(
     }
 
     private fun findAllPoints(basin: Basin, point: Point) {
-        // Check Top
-        if (field.hasOnSide(side = Sides.TOP, point = point)) {
-            val pointToCheck = point.top()
-            if (!basin.contains(pointToCheck) && isPointPartOfBasin(pointToCheck, basin)) {
-                basin.addPoint(pointToCheck)
-                findAllPoints(basin = basin, point = pointToCheck)
-            }
-        }
-        // Check Bottom
-        if (field.hasOnSide(side = Sides.BOTTOM, point = point)) {
-            val pointToCheck = point.bottom()
-            if (!basin.contains(pointToCheck) && isPointPartOfBasin(pointToCheck, basin)) {
-                basin.addPoint(pointToCheck)
-                findAllPoints(basin = basin, point = pointToCheck)
-            }
-        }
-        // Check Left
-        if (field.hasOnSide(side = Sides.LEFT, point = point)) {
-            val pointToCheck = point.left()
-            if (!basin.contains(pointToCheck) && isPointPartOfBasin(pointToCheck, basin)) {
-                basin.addPoint(pointToCheck)
-                findAllPoints(basin = basin, point = pointToCheck)
-            }
-        }
-        // Check Right
-        if (field.hasOnSide(side = Sides.RIGHT, point = point)) {
-            val pointToCheck = point.right()
-            if (!basin.contains(pointToCheck) && isPointPartOfBasin(pointToCheck, basin)) {
-                basin.addPoint(pointToCheck)
-                findAllPoints(basin = basin, point = pointToCheck)
+        Side.values().forEach { side ->
+            val pointToCheck = field.pointToCheck(side = side, point = point)
+            pointToCheck?.let {
+                if (basin.notContains(point = pointToCheck)
+                    && isLowestFromAdjacent(point = pointToCheck, basin = basin)
+                ) {
+                    basin.addPoint(point = pointToCheck)
+                    // Call the next point as recursion
+                    findAllPoints(basin = basin, point = pointToCheck)
+                }
             }
         }
     }
 
-    private fun isPointPartOfBasin(point: Point, basin: Basin): Boolean {
-        val pointValue = field[point]
-
-        // Check if the point is not corner and 9
-        if (pointValue == 9) {
-            return false
-        }
-
-        // Check Top
-        if (field.hasOnSide(side = Sides.TOP, point = point)) {
-            val pointToCheck = point.top()
-            if (!basin.contains(pointToCheck) && field[pointToCheck] <= pointValue) return false
-        }
-        // Check Bottom
-        if (field.hasOnSide(side = Sides.BOTTOM, point = point)) {
-            val pointToCheck = point.bottom()
-            if (!basin.contains(pointToCheck) && field[pointToCheck] <= pointValue) return false
-        }
-        // Check Left
-        if (field.hasOnSide(side = Sides.LEFT, point = point)) {
-            val pointToCheck = point.left()
-            if (!basin.contains(pointToCheck) && field[pointToCheck] <= pointValue) return false
-        }
-        // Check Right
-        if (field.hasOnSide(side = Sides.RIGHT, point = point)) {
-            val pointToCheck = point.right()
-            if (!basin.contains(pointToCheck) && field[pointToCheck] <= pointValue) return false
-        }
-
-        return true
-    }
-
-    // The method can be merged with isPointPartOfBasin if to handle empty basin
-    private fun isLowestFromAdjacent(point: Point): Boolean {
-
-        val num = field[point]
-
-        if (num == 9) {
-            return false
-        }
-
-        if (field.hasTop(point)) {
-            // Check top
-            val top = field[point.top()]
-            if (top <= num) return false
-        }
-        if (field.hasBottom(point)) {
-            // Check bottom
-            val bottom = field[point.bottom()]
-            if (bottom <= num) return false
-        }
-        if (field.hasLeft(point)) {
-            // Check left
-            val left = field[point.left()]
-            if (left <= num) return false
-        }
-        if (field.hasRight(point)) {
-            // Check right
-            val right = field[point.right()]
-            if (right <= num) return false
+    private fun isLowestFromAdjacent(point: Point, basin: Basin? = null): Boolean {
+        Side.values().forEach { side ->
+            val pointToCheck = field.pointToCheck(side = side, point = point)
+            pointToCheck?.let {
+                if ((basin == null || basin.notContains(point = pointToCheck))
+                    && field[pointToCheck] <= field[point]
+                ) {
+                    return false
+                }
+            }
         }
         return true
     }
-
 }

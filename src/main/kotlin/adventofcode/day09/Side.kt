@@ -1,8 +1,8 @@
 package adventofcode.day09
 
-enum class Sides {
+enum class Side {
     TOP,
     BOTTOM,
     LEFT,
-    RIGHT,
+    RIGHT
 }
