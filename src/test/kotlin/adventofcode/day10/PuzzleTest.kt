@@ -35,8 +35,6 @@ class PuzzleTest {
         Puzzle.calculatePart2(input = smallInput) shouldBe 288_957
     }
 
-    fun List<Bracket>.toClosedString() = this.map(Bracket::close).joinToString(separator = "")
-
     @Test
     fun `test part 2`() {
         Puzzle.calculatePart2(input = readInput("input_day10")) shouldBe 3_354_640_192

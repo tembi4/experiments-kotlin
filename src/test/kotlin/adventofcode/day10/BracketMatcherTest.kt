@@ -1,13 +1,14 @@
 package adventofcode.day10
 
 import adventofcode.day10.model.Bracket
+import adventofcode.day10.model.PointsCalculator
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Assertions.*
 import kotlin.test.Test
 
 class BracketMatcherTest {
 
-    fun List<Bracket>.toClosedString() = this.map(Bracket::close).joinToString(separator = "")
+    private fun List<Bracket>.toClosedString() = this.map(Bracket::close).joinToString(separator = "")
 
     @Test
     fun `test incompleted lines from example 1`() {
@@ -16,7 +17,8 @@ class BracketMatcherTest {
         """[({(<(())[]>[[{[]{<()<>>""")
         result.bracketsToComplete.toClosedString() shouldBe """}}]])})]"""
 
-        val points = Puzzle.calculatePoints(result)
+        val pointsCalculator = PointsCalculator()
+        val points = pointsCalculator.calculateTotalPoints(result.bracketsToComplete)
         points shouldBe 288_957
     }
     @Test
@@ -26,7 +28,8 @@ class BracketMatcherTest {
         """[(()[<>])]({[<{<<[]>>(""")
         result.bracketsToComplete.toClosedString() shouldBe """)}>]})"""
 
-        val points = Puzzle.calculatePoints(result)
+        val pointsCalculator = PointsCalculator()
+        val points = pointsCalculator.calculateTotalPoints(result.bracketsToComplete)
         points shouldBe 5_566
     }
     @Test
@@ -36,7 +39,8 @@ class BracketMatcherTest {
         """(((({<>}<{<{<>}{[]{[]{}""")
         result.bracketsToComplete.toClosedString() shouldBe """}}>}>))))"""
 
-        val points = Puzzle.calculatePoints(result)
+        val pointsCalculator = PointsCalculator()
+        val points = pointsCalculator.calculateTotalPoints(result.bracketsToComplete)
         points shouldBe 1_480_781
     }
     @Test
@@ -46,7 +50,8 @@ class BracketMatcherTest {
         """{<[[]]>}<{[{[{[]{()[[[]""")
         result.bracketsToComplete.toClosedString() shouldBe """]]}}]}]}>"""
 
-        val points = Puzzle.calculatePoints(result)
+        val pointsCalculator = PointsCalculator()
+        val points = pointsCalculator.calculateTotalPoints(result.bracketsToComplete)
         points shouldBe 995_444
     }
     @Test
@@ -56,7 +61,8 @@ class BracketMatcherTest {
         """<{([{{}}[<[[[<>{}]]]>[]]""")
         result.bracketsToComplete.toClosedString() shouldBe """])}>"""
 
-        val points = Puzzle.calculatePoints(result)
+        val pointsCalculator = PointsCalculator()
+        val points = pointsCalculator.calculateTotalPoints(result.bracketsToComplete)
         points shouldBe 294
     }
 
@@ -67,8 +73,9 @@ class BracketMatcherTest {
         """<([[<<(([{<<{<[]><(){}>}<[{}][{}{}]>>{({{}()})[[[]()][()()]]}>}][<([[[{}{}][[]]]]<<<{}<>>{[][]""")
         result.bracketsToComplete.toClosedString() shouldBe """}>>)>]))>>]])>"""
 
-        val points = Puzzle.calculatePoints(result)
-        points shouldBe 557_485_513
+        val pointsCalculator = PointsCalculator()
+        val points = pointsCalculator.calculateTotalPoints(result.bracketsToComplete)
+        points shouldBe 4_852_452_809
     }
 
 
