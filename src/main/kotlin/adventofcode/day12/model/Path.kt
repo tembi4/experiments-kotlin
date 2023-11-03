@@ -21,4 +21,5 @@ class Path {
     }
 
     override fun toString() = cavePoints.toString()
+    fun containsMoreThanOnce(caveToCheck: Cave) = cavePoints.count { it == caveToCheck } > 1
 }

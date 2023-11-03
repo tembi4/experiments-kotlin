@@ -69,11 +69,22 @@ class PuzzleTest {
     fun `test part 1`() {
         Puzzle.calculatePart1(input = readInput("input_day12")) shouldBe 3_485
     }
-//
-//    @Test
-//    fun `test part 2 small input`() {
-//        Puzzle.calculatePart2(input = smallInput) shouldBe 0
-//    }
+
+    @Test
+    fun `test part 2 small input`() {
+        Puzzle.calculatePart2(input = smallInput) shouldBe 36
+    }
+
+    @Test
+    fun `test part 2 larger input`() {
+        Puzzle.calculatePart2(input = largerInput) shouldBe 103
+    }
+
+    @Test
+    fun `test part 2 even larger input`() {
+        Puzzle.calculatePart2(input = evenLargerInput) shouldBe 3_509
+    }
+
 //
 //    @Test
 //    fun `test part 2`() {

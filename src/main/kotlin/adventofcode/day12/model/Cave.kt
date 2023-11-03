@@ -8,6 +8,13 @@ data class Cave(val name: String) {
     val isNotEnd = name != "end"
     val isNotStart = name != "start"
 
+    val connections = mutableSetOf<Cave>()
+
+    fun addConnection(cave: Cave) {
+        connections.add(cave)
+        cave.addConnection(this)
+    }
+
     override fun toString() = name
 
     companion object {
