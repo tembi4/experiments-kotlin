@@ -2,7 +2,6 @@ package adventofcode.day12
 
 import adventofcode.readInput
 import io.kotest.matchers.shouldBe
-import org.junit.jupiter.api.Assertions.*
 import kotlin.test.Test
 
 class PuzzleTest {
@@ -15,6 +14,15 @@ class PuzzleTest {
         A-end
         b-end
     """.trimIndent().split("\n").map { it.trim() }
+//            """
+//            start
+//            /   \
+//        c--A-----b--d
+//            \   /
+//             end
+//            """
+
+
 
     private val largerInput = """
         dc-end
@@ -85,9 +93,9 @@ class PuzzleTest {
         Puzzle.calculatePart2(input = evenLargerInput) shouldBe 3_509
     }
 
-//
-//    @Test
-//    fun `test part 2`() {
-//        Puzzle.calculatePart2(input = readInput("input_day12")) shouldBe 0
-//    }
+
+    @Test
+    fun `test part 2`() {
+        Puzzle.calculatePart2(input = readInput("input_day12")) shouldBe 85_062
+    }
 }

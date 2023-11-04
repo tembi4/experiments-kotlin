@@ -4,8 +4,12 @@ class Path {
 
     private val cavePoints = mutableListOf<Cave>()
 
-    constructor(vararg caves: Cave) {
-        cavePoints.addAll(caves)
+    constructor(cave: Cave) {
+        cavePoints.add(cave)
+    }
+
+    constructor(path: Path) {
+        this.cavePoints.addAll(path.cavePoints)
     }
 
     fun add(cave: Cave) {
@@ -13,13 +17,13 @@ class Path {
     }
 
     fun contains(cave: Cave) = cavePoints.contains(cave)
-
-    fun copy(): Path {
-        val path = Path()
-        path.cavePoints.addAll(cavePoints)
-        return path
-    }
-
     override fun toString() = cavePoints.toString()
-    fun containsMoreThanOnce(caveToCheck: Cave) = cavePoints.count { it == caveToCheck } > 1
+
+    // TODO: Map can be used here
+    fun containsTimes(caveToCheck: Cave) = cavePoints.count { it.name == caveToCheck.name }
+
+
+    fun containsSmallVisitedTwice() =
+        this.cavePoints.filter { !it.isBig }.groupingBy { it }.eachCount().filter { it.value > 1 }.isNotEmpty()
+
 }

@@ -1,10 +1,10 @@
 package adventofcode.day12.model
 
-class CaveMap {
+class CaveMap(input: List<String>) {
 
     private val connectionMap = mutableMapOf<Cave, MutableSet<Cave>>()
 
-    constructor(input: List<String>) {
+    init {
         input.forEach { line ->
             val tokens = line.split("-")
 
@@ -34,7 +34,7 @@ class CaveMap {
         if (cave.isNotEnd) {
             connectionMap[cave]?.forEach { connectedCave ->
                 if (isCheckNext(cave = connectedCave, path = path)) {
-                    val newPath = path.copy()
+                    val newPath = Path(path)
                     goNext(cave = connectedCave, path = newPath, possiblePaths = possiblePaths)
                     if (newPath.contains(Cave.end())) {
                         possiblePaths.add(newPath)
@@ -43,6 +43,8 @@ class CaveMap {
             }
         }
     }
+
+
 
     private fun isCheckNext(cave: Cave, path: Path) =
         ((cave.isBig || !path.contains(cave))
@@ -59,11 +61,11 @@ class CaveMap {
     private fun goNext2(cave: Cave, path: Path, possiblePaths: MutableSet<Path>) {
         path.add(cave)
         if (cave.isNotEnd) {
-            connectionMap[cave]?.forEach { connectedCave ->
+            connectionMap[cave]!!.forEach { connectedCave ->
                 if (isCheckNext2(cave = connectedCave, path = path)) {
-                    val newPath = path.copy()
-                    goNext(cave = connectedCave, path = newPath, possiblePaths = possiblePaths)
-                    if (newPath.contains(Cave.end())) {
+                    val newPath = Path(path)
+                    goNext2(cave = connectedCave, path = newPath, possiblePaths = possiblePaths)
+                    if (newPath.contains(Cave.end())) { // Can be replaced with last with End...?
                         possiblePaths.add(newPath)
                     }
                 }
@@ -71,30 +73,26 @@ class CaveMap {
         }
     }
 
-    private fun isCheckNext2(cave: Cave, path: Path): Boolean {
-        if (cave.isNotStart) {
-            val caveIsBig = cave.isBig
-            if (caveIsBig) {
-                return true
-            } else {
-                // Small Cave = the cave has only 1 connection
-                val caveIsSingle = connectionMap[cave]?.size?.equals(1) ?: false
 
-                if (caveIsSingle) {
-                    // Small Single cave can be visited at most twice
-                    return !path.containsMoreThanOnce(cave)
+    private fun isCheckNext2(cave: Cave, path: Path): Boolean {
+        if (cave.isStart) {
+            return false
+        } else if (cave.isBig) {
+            return true
+        } else {
+            // Small cave
+            val containsTimes = path.containsTimes(cave)
+            if (containsTimes == 0) {
+                return true
+            } else if (containsTimes == 1) {
+                // Already visited a small cave
+                if (!path.containsSmallVisitedTwice()) {
+                    return true
                 } else {
-                    // Visited at most once
-                    return !path.contains(cave)
+                    return false
                 }
             }
-
-        } else {
-            return false
         }
-
-
+        return false
     }
-
-
 }

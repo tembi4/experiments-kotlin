@@ -26,7 +26,7 @@ class Puzzle {
             val caveMap = CaveMap(input = input)
 
             val allDistinctPaths = caveMap.findAllDistinctPathsVisitingSingleCavesTwice()
-            allDistinctPaths.sortedBy(Path::toString).forEach { path -> println(path) }
+//            allDistinctPaths.sortedBy(Path::toString).forEach { path -> println(path) }
 
             return allDistinctPaths.size
         }
