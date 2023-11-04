@@ -9,7 +9,7 @@ class Puzzle {
         fun calculatePart1(input: List<String>): Int {
             val caveMap = CaveMap(input = input)
 
-            val allDistinctPaths = caveMap.findAllDistinctPaths()
+            val allDistinctPaths = caveMap.findAllDistinctPaths(part = 1)
 //            allDistinctPaths.sortedBy(Path::toString).forEach{ path -> println(path) }
 
             return allDistinctPaths.size
@@ -25,7 +25,7 @@ class Puzzle {
         fun calculatePart2(input: List<String>): Any {
             val caveMap = CaveMap(input = input)
 
-            val allDistinctPaths = caveMap.findAllDistinctPathsVisitingSingleCavesTwice()
+            val allDistinctPaths = caveMap.findAllDistinctPaths(part = 2)
 //            allDistinctPaths.sortedBy(Path::toString).forEach { path -> println(path) }
 
             return allDistinctPaths.size
