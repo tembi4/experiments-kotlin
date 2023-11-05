@@ -11,15 +11,13 @@ class CaveMap(input: List<String>) {
 
     init {
         val connectionMap = mutableMapOf<Cave, MutableSet<Cave>>()
-        input.forEach { line ->
-            val tokens = line.split("-")
-
-            val cave1 = Cave(tokens[0])
-            val cave2 = Cave(tokens[1])
-
-            connectionMap.addConnection(cave = cave1, caveToAdd = cave2)
-            connectionMap.addConnection(cave = cave2, caveToAdd = cave1)
-        }
+        input
+            .map { it.split("-") }
+            .map { Pair(Cave(it[0]), Cave(it[1])) }
+            .forEach { (cave1, cave2) ->
+                connectionMap.addConnection(cave = cave1, caveToAdd = cave2)
+                connectionMap.addConnection(cave = cave2, caveToAdd = cave1)
+            }
         strategyPart1 = StrategyPart1(connectionMap)
         strategyPart2 = StrategyPart2(connectionMap)
     }

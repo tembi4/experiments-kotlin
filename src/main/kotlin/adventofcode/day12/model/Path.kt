@@ -19,11 +19,8 @@ class Path {
     fun contains(cave: Cave) = cavePoints.contains(cave)
     override fun toString() = cavePoints.toString()
 
-    // TODO: Map can be used here
-    fun containsTimes(caveToCheck: Cave) = cavePoints.count { it.name == caveToCheck.name }
+    fun containsTimes(caveToCheck: Cave) = cavePoints.count { it == caveToCheck }
 
-
-    fun containsSmallVisitedTwice() =
-        this.cavePoints.filter { !it.isBig }.groupingBy { it }.eachCount().filter { it.value > 1 }.isNotEmpty()
-
+    fun notContainsSmallVisitedTwice() =
+        this.cavePoints.filter { it.isSmall }.groupingBy { it }.eachCount().filter { it.value > 1 }.isEmpty()
 }

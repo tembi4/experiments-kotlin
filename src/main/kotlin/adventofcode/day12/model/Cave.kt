@@ -3,11 +3,11 @@ package adventofcode.day12.model
 data class Cave(val name: String) {
 
     val isBig = name.uppercase() == name
+    val isSmall = name.lowercase() == name
 
     val isStart = name == "start"
     val isEnd = name == "end"
     val isNotEnd = name != "end"
-    val isNotStart = name != "start"
 
     override fun equals(other: Any?) = when {
         other == null -> false
