@@ -1,6 +1,6 @@
 package adventofcode.day14
 
-import adventofcode.countSymbols
+import adventofcode.countSymbolsAsLongMutable
 
 class Puzzle {
 
@@ -11,18 +11,12 @@ class Puzzle {
         private fun calculate(input: List<String>, totalSteps: Int): Long {
             val (initialPolymerTemplate, pairInsertions) = InputReader.read(input)
 
-            val symbolsCount: MutableMap<Char, Long> = countSymbols(initialPolymerTemplate).map {
+            val symbolsCount: MutableMap<Char, Long> = countSymbolsAsLongMutable(initialPolymerTemplate)
+            val pairs = initialPolymerTemplate.windowed(2).groupingBy { it }.eachCount().map {
                 it.key to it.value.toLong()
             }.toMap().toMutableMap()
-//            val occurences = pairInsertions.keys.map { it to 0 }
-
-            val pairs = initialPolymerTemplate.windowed(2).groupingBy { it }.eachCount().map {
-                    it.key to it.value.toLong()
-                }.toMap().toMutableMap()
 
             for (step in 1..totalSteps) {
-                println("Step: $step. Current queue size is ${pairs.size}")
-
                 val newPairs = mutableMapOf<String, Long>()
                 pairs.forEach { pairEntry ->
                     val (pair, numberOccurrence) = pairEntry
@@ -44,16 +38,13 @@ class Puzzle {
                 pairs.putAll(newPairs)
             }
 
-            // Calculate the result
-            val min = symbolsCount.minOf { it.value }
-            val max = symbolsCount.maxOf { it.value }
-
-            return max - min
+            return symbolsCount.betweenMinMax()
         }
 
         private fun MutableMap<Char, Long>.increase(key: Char, increment: Long) {
-            var count = this.getOrDefault(key, 0)
-            this[key] = count + increment
+            this[key] = getOrDefault(key, 0) + increment
         }
+
+        private fun MutableMap<Char, Long>.betweenMinMax() = maxOf { it.value } - minOf { it.value }
     }
 }
