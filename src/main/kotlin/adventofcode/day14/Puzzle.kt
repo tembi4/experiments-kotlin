@@ -1,7 +1,6 @@
 package adventofcode.day14
 
 import adventofcode.countSymbols
-import java.util.*
 
 class Puzzle {
 
@@ -14,30 +13,24 @@ class Puzzle {
 
             val symbolsCount = countSymbols(initialPolymerTemplate).toMutableMap()
 
-            val tasksQueue = initialPolymerTemplate.windowed(2).map {
-                Task(it, totalSteps)
-            }.toMutableList()
+            val queue = initialPolymerTemplate.windowed(2).toMutableList()
 
-            while (tasksQueue.isNotEmpty()) {
+            for (step in 1 .. totalSteps) {
+                println("Current queue size is ${queue.size}")
 
-                println("Current queue size is ${tasksQueue.size}")
-                val newTasks = mutableListOf<Task>()
-
-                tasksQueue.forEach {task ->
-                    val (pair, stepsRemain) = task
-                    // Each insertion will increase the Count
-                    if (stepsRemain > 0) {
+                val newTasks = mutableListOf<String>()
+                queue.forEach { pair ->
+                        // Each insertion will increase the Count
                         val symbolToInsert = pairInsertions[pair]
                         var currentCount = symbolsCount.getOrDefault(symbolToInsert!!, 0)
                         symbolsCount[symbolToInsert] = currentCount + 1
 
                         // Create 2 more tasks
-                        newTasks.add(Task("" + pair[0] + symbolToInsert, stepsRemain - 1))
-                        newTasks.add(Task("" + symbolToInsert + pair[1], stepsRemain - 1))
-                    }
+                        newTasks.add("${pair[0]}$symbolToInsert")
+                        newTasks.add("$symbolToInsert${pair[1]}")
                 }
-                tasksQueue.clear()
-                tasksQueue.addAll(newTasks)
+                queue.clear()
+                queue.addAll(newTasks)
             }
 
             // Calculate the result
@@ -48,5 +41,3 @@ class Puzzle {
         }
     }
 }
-
-data class Task(val pair: String, val stepsRemain: Int)
