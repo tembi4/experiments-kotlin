@@ -19,19 +19,25 @@ class Puzzle {
             }.toMutableList()
 
             while (tasksQueue.isNotEmpty()) {
-                val task = tasksQueue.removeFirst()
-                val (pair, stepsRemain) = task
 
-                // Each insertion will increase the Count
-                if (stepsRemain > 0) {
-                    val symbolToInsert = pairInsertions[pair]
-                    var currentCount = symbolsCount.getOrDefault(symbolToInsert!!, 0)
-                    symbolsCount[symbolToInsert] = currentCount + 1
+                println("Current queue size is ${tasksQueue.size}")
+                val newTasks = mutableListOf<Task>()
 
-                    // Create 2 more tasks
-                    tasksQueue.add(Task("" + pair[0] + symbolToInsert, stepsRemain - 1))
-                    tasksQueue.add(Task("" + symbolToInsert + pair[1], stepsRemain - 1))
+                tasksQueue.forEach {task ->
+                    val (pair, stepsRemain) = task
+                    // Each insertion will increase the Count
+                    if (stepsRemain > 0) {
+                        val symbolToInsert = pairInsertions[pair]
+                        var currentCount = symbolsCount.getOrDefault(symbolToInsert!!, 0)
+                        symbolsCount[symbolToInsert] = currentCount + 1
+
+                        // Create 2 more tasks
+                        newTasks.add(Task("" + pair[0] + symbolToInsert, stepsRemain - 1))
+                        newTasks.add(Task("" + symbolToInsert + pair[1], stepsRemain - 1))
+                    }
                 }
+                tasksQueue.clear()
+                tasksQueue.addAll(newTasks)
             }
 
             // Calculate the result

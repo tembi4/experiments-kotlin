@@ -39,7 +39,7 @@ class PuzzleTest {
 
 //    @Test
 //    fun `test part 2 small input`() {
-//        Puzzle.calculatePart2(input = smallInput) shouldBe 0
+//        Puzzle.calculatePart2(input = smallInput) shouldBe 2188189693529
 //    }
 
 //    @Test
