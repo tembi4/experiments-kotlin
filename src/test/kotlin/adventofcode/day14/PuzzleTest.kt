@@ -37,14 +37,14 @@ class PuzzleTest {
         Puzzle.calculatePart1(input = readInput("input_day14")) shouldBe 2_170
     }
 
-//    @Test
-//    fun `test part 2 small input`() {
-//        Puzzle.calculatePart2(input = smallInput) shouldBe 2188189693529
-//    }
+    @Test
+    fun `test part 2 small input`() {
+        Puzzle.calculatePart2(input = smallInput) shouldBe 2188189693529
+    }
 
-//    @Test
-//    fun `test part 2`() {
-//        Puzzle.calculatePart2(input = readInput("input_day13")) shouldBe 735
-//    }
+    @Test
+    fun `test part 2`() {
+        Puzzle.calculatePart2(input = readInput("input_day14")) shouldBe 2422444761283
+    }
 
 }

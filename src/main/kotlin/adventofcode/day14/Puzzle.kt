@@ -8,28 +8,40 @@ class Puzzle {
         fun calculatePart1(input: List<String>) = calculate(input = input, totalSteps = 10)
         fun calculatePart2(input: List<String>) = calculate(input = input, totalSteps = 40)
 
-        private fun calculate(input: List<String>, totalSteps: Int): Int {
+        private fun calculate(input: List<String>, totalSteps: Int): Long {
             val (initialPolymerTemplate, pairInsertions) = InputReader.read(input)
 
-            val symbolsCount = countSymbols(initialPolymerTemplate).toMutableMap()
+            val symbolsCount: MutableMap<Char, Long> = countSymbols(initialPolymerTemplate).map {
+                it.key to it.value.toLong()
+            }.toMap().toMutableMap()
+//            val occurences = pairInsertions.keys.map { it to 0 }
 
-            val queue = initialPolymerTemplate.windowed(2).toMutableList()
+            val pairs = initialPolymerTemplate.windowed(2).groupingBy { it }.eachCount().map {
+                    it.key to it.value.toLong()
+                }.toMap().toMutableMap()
 
             for (step in 1..totalSteps) {
-                println("Current queue size is ${queue.size}")
+                println("Step: $step. Current queue size is ${pairs.size}")
 
-                val newTasks = mutableListOf<String>()
-                queue.forEach { pair ->
+                val newPairs = mutableMapOf<String, Long>()
+                pairs.forEach { pairEntry ->
+                    val (pair, numberOccurrence) = pairEntry
+
                     // Each insertion will increase the Count
-                    val symbolToInsert = pairInsertions[pair]
-                    symbolsCount.increase(key = symbolToInsert!!, increment = 1)
+                    val symbolToInsert =
+                        pairInsertions[pair] ?: throw IllegalAccessException("$pair is not found in the vocabulary")
+                    symbolsCount.increase(key = symbolToInsert, increment = numberOccurrence)
 
                     // Create 2 more tasks
-                    newTasks.add("${pair[0]}$symbolToInsert")
-                    newTasks.add("$symbolToInsert${pair[1]}")
+                    val left = "${pair[0]}$symbolToInsert"
+                    val right = "$symbolToInsert${pair[1]}"
+
+                    newPairs[left] = newPairs.getOrDefault(left, 0) + numberOccurrence
+                    newPairs[right] = newPairs.getOrDefault(right, 0) + numberOccurrence
                 }
-                queue.clear()
-                queue.addAll(newTasks)
+
+                pairs.clear()
+                pairs.putAll(newPairs)
             }
 
             // Calculate the result
@@ -39,9 +51,9 @@ class Puzzle {
             return max - min
         }
 
-        private fun MutableMap<Char, Int>.increase(key: Char, increment: Int) {
-            var currentCount = this.getOrDefault(key, 0)
-            this[key] = currentCount + increment
+        private fun MutableMap<Char, Long>.increase(key: Char, increment: Long) {
+            var count = this.getOrDefault(key, 0)
+            this[key] = count + increment
         }
     }
 }
